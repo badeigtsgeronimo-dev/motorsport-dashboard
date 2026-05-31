@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UTN BA Motorsport — Equipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0c;
+  --surface: #141414;
+  --surface2: #1c1c1c;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f2f0ee;
+  --muted: #777;
+  --accent: #e8192a;
+  --accent-dim: rgba(232,25,42,0.15);
+  --f: #e8192a;
+  --b: #c0111f;
+  --n: #ff4d5a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: .12em;
+  color: var(--text);
+  white-space: nowrap;
+}
+.logo span { color: var(--accent); }
+nav { display: flex; gap: 2px; }
+.tab {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--muted);
+  border-radius: 6px;
+  transition: all .15s;
+  letter-spacing: .02em;
+}
+.tab:hover { color: var(--text); background: var(--surface2); }
+.tab.active { color: var(--accent); background: rgba(232,25,42,.12); }
+.header-date {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── PAGES ── */
+.page { display: none; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+#org.page { max-width: 100%; padding: 1rem 0; }
+.page.active { display: block; }
+
+/* ── DASHBOARD ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.kpi.total::before { background: var(--accent); }
+.kpi.kf::before { background: var(--f); }
+.kpi.kb::before { background: var(--b); }
+.kpi.kn::before { background: var(--n); }
+.kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+.kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 44px; line-height: 1; color: var(--text); }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media(max-width:640px){ .charts-grid { grid-template-columns: 1fr; } }
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+.chart-title { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.bar-label { font-size: 12px; color: var(--muted); width: 110px; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.bar-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 22px; }
+
+/* ── MEMBERS TABLE ── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--muted); }
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.member-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  position: relative;
+}
+.member-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.member-card-top { display: flex; align-items: flex-start; gap: 10px; }
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500; flex-shrink: 0; letter-spacing: -.01em;
+}
+.av-f { background: rgba(232,25,42,.15); color: #ff6070; }
+.av-b { background: rgba(192,17,31,.15); color: #e86070; }
+.av-n { background: rgba(255,77,90,.12); color: #ff9098; }
+.member-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.member-role { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.member-meta {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.pill {
+  font-size: 11px; padding: 2px 8px; border-radius: 5px;
+  font-family: 'DM Mono', monospace;
+}
+.pill-area { background: rgba(255,255,255,.05); color: var(--muted); }
+.pill-year { background: rgba(232,25,42,.1); color: #e85060; }
+.pill-eng { background: rgba(255,255,255,.04); color: var(--muted); }
+.member-links { display: flex; gap: 6px; margin-top: 8px; }
+.member-links a {
+  font-size: 11px; color: var(--muted); text-decoration: none;
+  padding: 3px 8px; border: 1px solid var(--border);
+  border-radius: 5px; transition: all .15s;
+}
+.member-links a:hover { color: var(--accent); border-color: var(--accent); }
+.equipo-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  position: absolute; top: 12px; right: 12px;
+}
+.dot-f { background: var(--f); }
+.dot-b { background: var(--b); }
+.dot-n { background: var(--n); }
+
+/* ── ORG ── */
+.org-section { margin-bottom: 2rem; }
+.org-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 1rem; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.org-team-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .08em; }
+.org-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+.org-level { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: flex-start; }
+.org-level-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); width: 80px; flex-shrink: 0; padding-top: 6px;
+}
+.org-node {
+  font-size: 12px; padding: 4px 12px; border-radius: 6px;
+  border: 1px solid; font-family: 'DM Mono', monospace;
+}
+.node-pm { background: rgba(232,25,42,.1); color: var(--accent); border-color: rgba(232,25,42,.3); }
+.node-resp { background: rgba(255,80,100,.08); color: #ff6b78; border-color: rgba(192,17,31,.25); }
+.node-member { background: rgba(255,255,255,.04); color: var(--muted); border-color: var(--border); }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1.5rem; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+.stat-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 1rem; }
+.stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.stat-name { color: var(--muted); flex: 1; }
+.stat-val { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); }
+.stat-bar-mini { width: 80px; height: 4px; background: var(--surface2); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.stat-bar-mini-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+
+/* ── EMPTY ── */
+.empty-msg { color: var(--muted); font-size: 14px; padding: 2rem 0; text-align: center; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 2rem;
+  font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+
+/* ── ORG TREE ── */
+.otree{display:flex;flex-direction:column;align-items:center;padding:1.5rem 0 3rem;overflow-x:auto}
+.olevel{display:flex;justify-content:center;gap:12px;width:100%}
+.olevel-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.oconn{width:2px;height:28px;background:linear-gradient(to bottom,rgba(232,25,42,.6),rgba(232,25,42,.2));margin:0 auto;flex-shrink:0}
+.ofeed-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(232,25,42,.55);margin:4px auto;padding:2px 12px;border:1px solid rgba(232,25,42,.2);border-radius:20px}
+.onode{border-radius:8px;border:1px solid rgba(255,255,255,0.12);padding:10px 14px;text-align:center;min-width:130px;max-width:175px;background:#141414;transition:border-color .15s,transform .15s;cursor:default}
+.onode:hover{border-color:rgba(232,25,42,.45);transform:translateY(-1px)}
+.onode-name{font-size:12px;font-weight:500;color:#f2f0ee;line-height:1.3;margin-bottom:3px}
+.onode-role{font-size:10px;color:#777;line-height:1.3}
+.onode-area-tag{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#e8192a;margin-bottom:4px;font-family:'DM Mono',monospace}
+.onode-root{background:#1a0608;border-color:rgba(232,25,42,.45);min-width:190px}
+.onode-root .onode-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;color:#e8192a}
+.onode-team{background:#1a0608;border-color:rgba(232,25,42,.5);min-width:210px}
+.onode-team .onode-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;color:#e8192a}
+.onode-team-b{background:#140508;border-color:rgba(192,17,31,.4)}
+.onode-team-b .onode-name{color:#e05060}
+.onode-team-n{background:#110406;border-color:rgba(180,10,25,.3)}
+.onode-team-n .onode-name{color:#cc4050}
+.onode-pm{background:rgba(232,25,42,.1);border-color:rgba(232,25,42,.38);min-width:155px}
+.onode-pm .onode-name{color:#e8192a}
+.onode-vacante{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);min-width:155px;opacity:.55}
+.onode-resp{background:rgba(200,20,35,.08);border-color:rgba(200,20,35,.28)}
+.onode-resp .onode-name{color:#e06070}
+.onode-member{background:#1c1c1c;border-color:rgba(255,255,255,.06)}
+.olevel-areas-wrap{width:100%;overflow-x:auto;padding:0 1rem}
+.olevel-areas{display:flex;gap:10px;justify-content:center;width:max-content;min-width:100%;padding:8px 0}
+.oarea-col{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:145px;max-width:165px}
+.omembers-stack{display:flex;flex-direction:column;gap:5px;width:100%;border-left:2px solid rgba(232,25,42,.18);padding-left:8px;margin-left:4px}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">UTN BA <span>MOTORSPORT</span></div>
+  <nav>
+    <button class="tab active" onclick="showTab('dashboard')">Dashboard</button>
+    <button class="tab" onclick="showTab('members')">Integrantes</button>
+    <button class="tab" onclick="showTab('org')">Organigrama</button>
+    <button class="tab" onclick="showTab('stats')">Estadísticas</button>
+  </nav>
+  <div class="header-date" id="hdate"></div>
+</header>
+
+<div id="dashboard" class="page active">
+  <div class="kpi-grid" id="kpis"></div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Distribución por equipo</div>
+      <div id="chart-equipos"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribución por área</div>
+      <div id="chart-areas"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Año de carrera</div>
+      <div id="chart-anos"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Nivel de inglés</div>
+      <div id="chart-ingles"></div>
+    </div>
+  </div>
+</div>
+
+<div id="members" class="page">
+  <div class="toolbar">
+    <input type="text" class="search-input" placeholder="Buscar por nombre, rol, área, software..." oninput="renderCards()" id="search">
+    <select class="filter-select" onchange="renderCards()" id="fEquipo">
+      <option value="">Todos los equipos</option>
+      <option value="Formula">Fórmula SAE</option>
+      <option value="Baja">Baja SAE</option>
+      <option value="Freshman">Freshman</option>
+    </select>
+    <select class="filter-select" onchange="renderCards()" id="fArea">
+      <option value="">Todas las áreas</option>
+    </select>
+  </div>
+  <div class="member-grid" id="memberGrid"></div>
+  <div class="empty-msg" id="emptyMsg" style="display:none">No hay resultados para esta búsqueda.</div>
+</div>
+
+<div id="org" class="page">
+  <div id="orgContent"></div>
+</div>
+
+<div id="stats" class="page">
+  <div class="stats-grid" id="statsContent"></div>
+</div>
+
+<footer>UTN BA Motorsport · Documento de uso interno · <span id="fyear"></span></footer>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzHqqW1FlzMkUrCrg7CROHeN0GRcHC8zR1YNhxL1-0urmdAMA-HmkQqELoEF74R_zQ7/exec";
+let DATA = [];
+
+// ── helpers ──
+function initials(n,a){return((n||'').charAt(0)+(a||'').charAt(0)).toUpperCase();}
+function equipoClass(e){return e==='Baja'?'b':e==='Freshman'?'n':'f';}
+function count(arr,key){
+  return arr.reduce((acc,d)=>{
+    const v=d[key]||'—';acc[v]=(acc[v]||0)+1;return acc;
+  },{});
+}
+function makeBars(obj,color,max){
+  const sorted=Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  const m=max||sorted[0][1];
+  return sorted.map(([k,v])=>`
+    <div class="bar-row">
+      <span class="bar-label">${k}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/m*100)}%;background:${color}"></div></div>
+      <span class="bar-count">${v}</span>
+    </div>`).join('');
+}
+
+// ── Dashboard ──
+function buildDashboard(){
+  const total=DATA.length;
+  const f=DATA.filter(d=>d.equipo==='Formula').length;
+  const b=DATA.filter(d=>d.equipo==='Baja').length;
+  const n=DATA.filter(d=>d.equipo==='Freshman').length;
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi total"><div class="kpi-label">Total</div><div class="kpi-value">${total}</div><div class="kpi-sub">integrantes</div></div>
+    <div class="kpi kf"><div class="kpi-label">Fórmula SAE</div><div class="kpi-value">${f}</div><div class="kpi-sub">8 áreas</div></div>
+    <div class="kpi kb"><div class="kpi-label">Baja SAE</div><div class="kpi-value">${b}</div></div>
+    <div class="kpi kn"><div class="kpi-label">Freshman</div><div class="kpi-value">${n}</div><div class="kpi-sub">semillero</div></div>
+  `;
+  const eqColors={'Formula':'var(--f)','Baja':'var(--b)','Freshman':'var(--n)'};
+  const eqObj=count(DATA,'equipo');
+  document.getElementById('chart-equipos').innerHTML=Object.entries(eqObj).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="bar-row">
+      <span class="bar-label">${k}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/total*100)}%;background:${eqColors[k]||'var(--accent)'}"></div></div>
+      <span class="bar-count">${v}</span>
+    </div>`).join('');
+  document.getElementById('chart-areas').innerHTML=makeBars(count(DATA,'area'),'var(--accent)');
+  document.getElementById('chart-anos').innerHTML=makeBars(count(DATA,'ano'),'#a01020');
+  const inglObj=count(DATA,'ingles');
+  const inglColors={'Alto':'#e8192a','Medio':'#a01020','Bajo':'#555'};
+  document.getElementById('chart-ingles').innerHTML=Object.entries(inglObj).map(([k,v])=>`
+    <div class="bar-row">
+      <span class="bar-label">${k}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/total*100)}%;background:${inglColors[k]||'var(--muted)'}"></div></div>
+      <span class="bar-count">${v}</span>
+    </div>`).join('');
+}
+
+// ── Members ──
+function buildAreaFilter(){
+  const areas=[...new Set(DATA.map(d=>d.area))].sort();
+  const sel=document.getElementById('fArea');
+  areas.forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;sel.appendChild(o);});
+}
+function renderCards(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const eq=document.getElementById('fEquipo').value;
+  const ar=document.getElementById('fArea').value;
+  const filtered=DATA.filter(d=>{
+    const matchQ=!q||(d.nombre+d.apellido+d.rol+d.area+d.software+d.carrera).toLowerCase().includes(q);
+    const matchE=!eq||d.equipo===eq;
+    const matchA=!ar||d.area===ar;
+    return matchQ&&matchE&&matchA;
+  });
+  const grid=document.getElementById('memberGrid');
+  const empty=document.getElementById('emptyMsg');
+  if(!filtered.length){grid.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  grid.innerHTML=filtered.map(d=>{
+    const cl=equipoClass(d.equipo);
+    const links=[
+      d.linkedin&&d.linkedin.startsWith('http')?`<a href="${d.linkedin}" target="_blank">LinkedIn</a>`:'',
+      d.instagram&&d.instagram.startsWith('http')?`<a href="${d.instagram}" target="_blank">Instagram</a>`:''
+    ].filter(Boolean).join('');
+    return `<div class="member-card">
+      <div class="equipo-dot dot-${cl}"></div>
+      <div class="member-card-top">
+        <div class="avatar av-${cl}">${initials(d.nombre,d.apellido)}</div>
+        <div>
+          <div class="member-name">${d.nombre} ${d.apellido}</div>
+          <div class="member-role">${d.rol}</div>
+        </div>
+      </div>
+      <div class="member-meta">
+        <span class="pill pill-area">${d.area}</span>
+        <span class="pill pill-year">${d.ano}</span>
+        <span class="pill pill-eng">Inglés ${d.ingles}</span>
+      </div>
+      ${links?`<div class="member-links">${links}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── Organigrama ──
+function buildOrg(){
+  // --- helpers ---
+  function node(cls, name, role, extra){
+    return `<div class="onode ${cls}"><div class="onode-name">${name}</div><div class="onode-role">${role}</div>${extra||''}</div>`;
+  }
+  function connector(){ return '<div class="oconn"></div>'; }
+  function hline(){ return '<div class="ohline"></div>'; }
+
+  // --- data buckets ---
+  const formula = DATA.filter(d=>d.equipo==='Formula');
+  const baja    = DATA.filter(d=>d.equipo==='Baja');
+  const fresh   = DATA.filter(d=>d.equipo==='Freshman');
+
+  // Team Leader sits above PM
+  const tl = formula.find(d=>d.rol.toLowerCase().includes('team leader'));
+  const pm = formula.find(d=>d.rol.toLowerCase().includes('project manager'));
+  // Tesorero at same level as PM
+  const tesorero = formula.find(d=>d.rol.toLowerCase().includes('tesorero'));
+
+  // Formula areas
+  const areas = [...new Set(formula.map(d=>d.area).filter(a=>a&&a!=='Gerencia'))];
+  // exclude top-level roles from areas
+  const topRoles = [tl, pm, tesorero].filter(Boolean);
+  const areaLeads = areas.map(a=>{
+    const lead = formula.find(d=>d.area===a && !topRoles.includes(d) && (d.rol.toLowerCase().includes('responsable')||d.rol.toLowerCase().includes('jefe')));
+    const members = formula.filter(d=>d.area===a && d!==lead && !topRoles.includes(d));
+    return {area:a, lead, members};
+  });
+
+  // Baja leads & members
+  const bajaLead = baja.find(d=>d.rol.toLowerCase().includes('jefe'));
+  const bajaRests = baja.filter(d=>d!==bajaLead);
+
+  // Freshman lead & members
+  const freshLead = fresh.find(d=>d.rol.toLowerCase().includes('líder')||d.rol.toLowerCase().includes('lider'));
+  const freshRests = fresh.filter(d=>d!==freshLead);
+
+  // --- build HTML ---
+  let h = '';
+
+  // ROOT
+  h += `<div class="otree">`;
+
+  // Level 0 — org root
+  h += `<div class="olevel">
+    <div class="onode onode-root"><div class="onode-name">UTN BA Motorsport</div><div class="onode-role">Organización</div></div>
+  </div>`;
+  h += connector();
+
+  // Level 1 — Formula SAE block
+  h += `<div class="olevel">
+    <div class="onode onode-team"><div class="onode-name">Fórmula SAE</div><div class="onode-role">Equipo principal</div></div>
+  </div>`;
+  h += connector();
+
+  // Level 2 — Team Leader
+  if(tl){
+    h += `<div class="olevel">`;
+    h += node('onode-pm', tl.nombre+' '+tl.apellido, tl.rol);
+    h += `</div>`;
+    h += connector();
+  }
+
+  // Level 3 — PM + Tesorero
+  h += `<div class="olevel olevel-row">`;
+  if(pm) h += node('onode-pm', pm.nombre+' '+pm.apellido, pm.rol);
+  if(tesorero) h += node('onode-pm', tesorero.nombre+' '+tesorero.apellido, tesorero.rol);
+  else h += node('onode-vacante', 'Vacante', 'Jefe Financiero / Contabilidad');
+  h += `</div>`;
+  h += connector();
+
+  // Level 3 — Area leads row
+  h += `<div class="olevel-areas-wrap">`;
+  h += `<div class="olevel olevel-areas">`;
+  areaLeads.forEach(({area,lead,members})=>{
+    h += `<div class="oarea-col">`;
+    if(lead){
+      h += `<div class="onode onode-resp"><div class="onode-area-tag">${area}</div><div class="onode-name">${lead.nombre} ${lead.apellido}</div><div class="onode-role">${lead.rol.length>40?lead.rol.substring(0,38)+'…':lead.rol}</div></div>`;
+    } else {
+      h += `<div class="onode onode-resp"><div class="onode-area-tag">${area}</div><div class="onode-name">—</div><div class="onode-role">Sin responsable</div></div>`;
+    }
+    if(members.length){
+      h += `<div class="omembers-stack">`;
+      members.forEach(m=>{
+        h += `<div class="onode onode-member"><div class="onode-name">${m.nombre} ${m.apellido}</div><div class="onode-role">${m.rol.length>36?m.rol.substring(0,34)+'…':m.rol}</div></div>`;
+      });
+      h += `</div>`;
+    }
+    h += `</div>`;
+  });
+  h += `</div></div>`;
+
+  // Connector down to Baja
+  h += `<div class="ofeed-label">Pipeline de talento</div>`;
+  h += connector();
+
+  // Level — Baja SAE
+  h += `<div class="olevel">
+    <div class="onode onode-team onode-team-b"><div class="onode-name">Baja SAE</div><div class="onode-role">Semillero avanzado · ${baja.length} integrantes</div></div>
+  </div>`;
+  h += connector();
+
+  // Baja leads row
+  h += `<div class="olevel olevel-row">`;
+  if(bajaLead) h += node('onode-resp', bajaLead.nombre+' '+bajaLead.apellido, bajaLead.rol);
+  bajaRests.forEach(m=> h += node('onode-member', m.nombre+' '+m.apellido, m.rol.length>36?m.rol.substring(0,34)+'…':m.rol));
+  h += `</div>`;
+
+  h += connector();
+
+  // Level — Freshman
+  h += `<div class="olevel">
+    <div class="onode onode-team onode-team-n"><div class="onode-name">Freshman</div><div class="onode-role">Semillero de ingreso · ${fresh.length} integrantes</div></div>
+  </div>`;
+  h += connector();
+
+  h += `<div class="olevel olevel-row">`;
+  if(freshLead) h += node('onode-resp', freshLead.nombre+' '+freshLead.apellido, freshLead.rol);
+  freshRests.forEach(m=> h += node('onode-member', m.nombre+' '+m.apellido, m.rol.length>36?m.rol.substring(0,34)+'…':m.rol));
+  h += `</div>`;
+
+  h += `</div>`; // otree
+
+  document.getElementById('orgContent').innerHTML=h;
+}
+
+// ── Estadísticas ──
+function buildStats(){
+  const softAll=DATA.flatMap(d=>d.software.split(',').map(s=>s.trim().toLowerCase()).filter(s=>s&&s!=='ninguno específico'&&s.length>1));
+  const softCount={};
+  softAll.forEach(s=>{softCount[s]=(softCount[s]||0)+1;});
+  const topSoft=Object.entries(softCount).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const maxSoft=topSoft[0]?.[1]||1;
+
+  const zonas=count(DATA,'zona');
+  const topZonas=Object.entries(zonas).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxZ=topZonas[0]?.[1]||1;
+
+  const carreras=count(DATA,'carrera');
+  const topCarreras=Object.entries(carreras).sort((a,b)=>b[1]-a[1]);
+  const maxC=topCarreras[0]?.[1]||1;
+
+  document.getElementById('statsContent').innerHTML=`
+    <div class="stat-card">
+      <div class="stat-card-title">Top software y lenguajes</div>
+      ${topSoft.map(([k,v])=>`<div class="stat-row"><span class="stat-name">${k}</span><div class="stat-bar-mini"><div class="stat-bar-mini-fill" style="width:${Math.round(v/maxSoft*100)}%"></div></div><span class="stat-val">${v}</span></div>`).join('')}
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">Carreras</div>
+      ${topCarreras.map(([k,v])=>`<div class="stat-row"><span class="stat-name">${k}</span><div class="stat-bar-mini"><div class="stat-bar-mini-fill" style="width:${Math.round(v/maxC*100)}%;background:var(--f)"></div></div><span class="stat-val">${v}</span></div>`).join('')}
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">Zonas / barrios</div>
+      ${topZonas.map(([k,v])=>`<div class="stat-row"><span class="stat-name">${k}</span><div class="stat-bar-mini"><div class="stat-bar-mini-fill" style="width:${Math.round(v/maxZ*100)}%;background:var(--b)"></div></div><span class="stat-val">${v}</span></div>`).join('')}
+    </div>
+  `;
+}
+
+// ── Nav ──
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector(`.tab[onclick="showTab('${id}')"]`).classList.add('active');
+}
+
+// ── Init ──
+function setDate(){
+  const now=new Date();
+  document.getElementById('hdate').textContent=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('fyear').textContent=now.getFullYear();
+}
+
+function showLoading(){
+  ['dashboard','members','org','stats'].forEach(id=>{
+    const el=document.getElementById(id==='members'?'memberGrid':id==='org'?'orgContent':id==='stats'?'statsContent':'kpis');
+    if(el) el.innerHTML='<div style="color:#777;font-size:13px;padding:2rem;text-align:center">Cargando datos...</div>';
+  });
+}
+
+function showError(msg){
+  ['kpis','memberGrid','orgContent','statsContent'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=`<div style="color:#e8192a;font-size:13px;padding:2rem;text-align:center">${msg}</div>`;
+  });
+}
+
+async function init(){
+  setDate();
+  showLoading();
+  try {
+    const res = await fetch(API_URL);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DATA = await res.json();
+    if(!DATA.length) throw new Error('Sin datos');
+    buildDashboard();
+    buildAreaFilter();
+    renderCards();
+    buildOrg();
+    buildStats();
+  } catch(err){
+    console.error(err);
+    showError('No se pudieron cargar los datos. Verificá la URL del Apps Script.<br><small>'+err.message+'</small>');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
