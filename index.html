@@ -353,7 +353,7 @@ footer {
 <footer>UTN BA Motorsport · Documento de uso interno · <span id="fyear"></span></footer>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwocpkfwH0Wnmz9T-2hdvXzhbr5gXLiJE4frrQANwZmm74PrFL51NmSOBwwOrXSKRp7/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwv7B4tiUjr_QwiVC0z2YF1gq06HtFn5cLqjeBUwVLdgYop2OXxqFxXB8jZISxx0_11/exec";
 let DATA = [];
 
 // ── helpers ──
@@ -640,23 +640,24 @@ function showError(msg){
   });
 }
 
-async function init(){
+function onDatosRecibidos(data) {
+  DATA = data;
+  if(!DATA.length){ showError('La Sheet no devolvió datos.'); return; }
+  buildDashboard();
+  buildAreaFilter();
+  renderCards();
+  buildOrg();
+  buildStats();
+}
+
+function init(){
   setDate();
   showLoading();
-  try {
-    const res = await fetch(API_URL);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    DATA = await res.json();
-    if(!DATA.length) throw new Error('Sin datos');
-    buildDashboard();
-    buildAreaFilter();
-    renderCards();
-    buildOrg();
-    buildStats();
-  } catch(err){
-    console.error(err);
-    showError('No se pudieron cargar los datos. Verificá la URL del Apps Script.<br><small>'+err.message+'</small>');
-  }
+  // JSONP: evita restricciones CORS
+  const script = document.createElement('script');
+  script.onerror = function(){ showError('No se pudieron cargar los datos.<br><small>Verificá que el Apps Script esté publicado como "Cualquier persona".</small>'); };
+  script.src = API_URL + '?callback=onDatosRecibidos';
+  document.head.appendChild(script);
 }
 
 init();
